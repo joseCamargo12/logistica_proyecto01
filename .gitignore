@@ -1,0 +1,41 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+env/
+venv/
+.venv/
+
+# Archivos de entorno
+.env
+*.env
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos de Jupyter (si los usas)
+.ipynb_checkpoints/
+
+# Archivos de bases de datos
+*.sqlite3
+*.db
+
+# Archivos CSV temporales o de prueba
+*.csv
+
+# Archivos de logs
+*.log
+logs/
+
+# Carpetas de despliegue si las generas
+build/
+dist/
+
+# Git backups
+*.orig
