@@ -39,3 +39,19 @@ dist/
 
 # Git backups
 *.orig
+# Ignorar entorno virtual
+env/
+venv/
+.venv/
+
+# Ignorar archivos de Python innecesarios
+__pycache__/
+*.pyc
+
+# Ignorar archivos temporales o personales
+.DS_Store
+*.log
+
+# Ignorar archivos de configuración de IDEs
+.vscode/
+.idea/
