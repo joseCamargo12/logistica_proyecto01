@@ -1,0 +1,9 @@
+﻿# archivo: dashboard/requirements.txt
+
+# Principales
+streamlit
+pandas
+streamlit-authenticator
+supabase
+psycopg2-binary
+openpyxl
