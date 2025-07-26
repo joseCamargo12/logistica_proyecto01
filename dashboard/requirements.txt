@@ -1,10 +1,8 @@
-﻿# archivo: dashboard/requirements.txt
-
-# Principales
-streamlit
+﻿streamlit
 pandas
 streamlit-authenticator
 supabase
 psycopg2-binary
 openpyxl
 numpy
+plotly  

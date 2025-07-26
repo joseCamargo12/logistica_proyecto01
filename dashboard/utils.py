@@ -1,5 +1,5 @@
 # ================================================
-# ARCHIVO: dashboard/utils.py (VERSIÓN CON ANÁLISIS DE CALIDAD)
+# ARCHIVO A MODIFICAR: dashboard/utils.py
 # ================================================
 import streamlit as st
 import pandas as pd
@@ -41,21 +41,14 @@ def procesar_y_validar_dataframe(df_crudo: pd.DataFrame):
     for col in columnas_texto:
         if col not in df.columns: df[col] = 'NO ESPECIFICADO'
         else:
-            df[col] = df[col].fillna('NO ESPECIFICADO').astype(str).str.strip().str.upper()
-            df[col] = df[col].replace(['', 'NAN', 'NONE'], 'NO ESPECIFICADO')
+            df[col] = df[col].astype(str).fillna('NO ESPECIFICADO').str.strip().str.upper()
+            df[col] = df[col].replace(['', 'NAN', 'NONE', 'NA'], 'NO ESPECIFICADO')
 
     # --- PASO 3: SEPARAR DATOS LIMPIOS DE DUPLICADOS ---
-    # Marcar todas las filas que son parte de un conjunto de duplicados
-    es_duplicado = df.duplicated(subset=['file'], keep=False)
-    
-    # Crear el informe de duplicados (contiene todas las instancias de un 'file' repetido)
-    df_duplicados = df[es_duplicado].sort_values('file')
-
-    # Crear el conjunto de datos limpio (se queda con la primera aparición de cada 'file')
-    df_limpio = df.drop_duplicates(subset=['file'], keep='first')
-    
-    # Eliminar del set limpio las filas sin un 'file' válido
-    df_limpio = df_limpio[df_limpio['file'] != 'NO ESPECIFICADO']
+    df_validos = df[df['file'] != 'NO ESPECIFICADO'].copy()
+    es_duplicado = df_validos.duplicated(subset=['file'], keep=False)
+    df_duplicados = df_validos[es_duplicado].sort_values('file')
+    df_limpio = df_validos.drop_duplicates(subset=['file'], keep='first')
 
     # --- PASO 4: ANÁLISIS DE CALIDAD SOBRE LOS DATOS LIMPIOS ---
     resumen_calidad = []
@@ -64,14 +57,14 @@ def procesar_y_validar_dataframe(df_crudo: pd.DataFrame):
         columnas_a_revisar = ['operativo', 'comercial', 'estado']
         for col in columnas_a_revisar:
             faltantes = df_limpio[df_limpio[col] == 'NO ESPECIFICADO'].shape[0]
-            porcentaje = (faltantes / total_registros) * 100 if total_registros > 0 else 0
+            porcentaje = (faltantes / total_registros) * 100
             resumen_calidad.append({
                 "Campo": col.replace('_', ' ').title(),
                 "Registros Faltantes": faltantes,
                 "Porcentaje (%)": f"{porcentaje:.1f}%"
             })
     
-    # --- PASO 5: PROCESAR FECHAS Y SELECCIONAR COLUMNAS FINALES EN EL DF LIMPIO ---
+    # --- PASO 5: PROCESAR FECHAS Y SELECCIONAR COLUMNAS FINALES ---
     columnas_fecha = [
         'fecha_file', 'fecha_cierre', 'fecha_primera_factura', 'fecha_arribo',
         'fecha_zarpe', 'fecha_de_factura', 'fecha_envio_cierre'
@@ -92,12 +85,11 @@ def procesar_y_validar_dataframe(df_crudo: pd.DataFrame):
     return df_limpio, df_duplicados, pd.DataFrame(resumen_calidad)
 
 def actualizar_bd_con_nuevos_datos(df_limpio: pd.DataFrame, supabase: Client) -> int:
-    # Esta función ya no necesita cambios, funcionará con el df_limpio
     if df_limpio.empty:
         st.warning("No hay datos limpios para subir.")
         return 0
     try:
-        with st.spinner("Consultando registros existentes en la base de datos..."):
+        with st.spinner("Consultando registros existentes..."):
             response = supabase.table('operaciones').select('file', count='exact').execute()
             archivos_existentes = {item['file'] for item in response.data}
         
@@ -105,7 +97,7 @@ def actualizar_bd_con_nuevos_datos(df_limpio: pd.DataFrame, supabase: Client) ->
         num_nuevos = len(df_nuevos)
         
         if num_nuevos > 0:
-            with st.spinner(f"Preparando e insertando {num_nuevos} operaciones nuevas..."):
+            with st.spinner(f"Insertando {num_nuevos} operaciones nuevas..."):
                 df_insertar = df_nuevos.copy()
                 columnas_fecha = ['fecha_file', 'fecha_cierre', 'fecha_primera_factura', 'fecha_arribo', 'fecha_zarpe', 'fecha_de_factura', 'fecha_envio_cierre']
                 for col in columnas_fecha:
@@ -114,7 +106,7 @@ def actualizar_bd_con_nuevos_datos(df_limpio: pd.DataFrame, supabase: Client) ->
                 df_insertar = df_insertar.replace({np.nan: None})
                 data_to_insert = df_insertar.to_dict(orient='records')
                 supabase.table('operaciones').insert(data_to_insert).execute()
-            st.success(f"✅ ¡Éxito! Se han añadido {num_nuevos} operaciones nuevas a la base de datos.")
+            st.success(f"✅ ¡Éxito! Se han añadido {num_nuevos} operaciones nuevas.")
         else:
             st.info("ℹ️ No se encontraron operaciones nuevas. La base de datos ya está actualizada.")
         return num_nuevos
@@ -123,9 +115,23 @@ def actualizar_bd_con_nuevos_datos(df_limpio: pd.DataFrame, supabase: Client) ->
         st.error(f"❌ Error al actualizar la base de datos: {e}")
         return -1
 
+def registrar_log_de_carga(supabase: Client, num_limpios: int, num_duplicados: int, resumen_calidad: pd.DataFrame):
+    """Guarda un resumen de la carga en la tabla cargas_log."""
+    try:
+        calidad_dict = resumen_calidad.to_dict(orient='records')
+        log_entry = {
+            "registros_limpios": num_limpios,
+            "registros_duplicados": num_duplicados,
+            "calidad_json": calidad_dict
+        }
+        supabase.table('cargas_log').insert(log_entry).execute()
+        return True
+    except Exception as e:
+        st.sidebar.error(f"Error al registrar el log de carga: {e}")
+        return False
+
 @st.cache_data
 def to_excel(df: pd.DataFrame):
-    # Sin cambios
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False, sheet_name='Datos')
