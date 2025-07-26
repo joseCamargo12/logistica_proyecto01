@@ -1,18 +1,21 @@
 ﻿# ================================================
-# ARCHIVO A MODIFICAR: dashboard/requirements.txt (VERSIÓN SEGURA)
+# ARCHIVO: dashboard/requirements.txt (VERSIÓN FINAL PARA RENDER)
 # ================================================
-streamlit
-pandas
-streamlit-authenticator
-supabase
-psycopg2-binary
-openpyxl
-numpy==1.26.4
-plotly
 
-# Dependencias específicas para Prophet, se instalan primero
+# --- Librerías base ---
+streamlit==1.35.0
+pandas==2.2.2
+streamlit-authenticator==0.3.2
+supabase==2.5.1
+psycopg2-binary==2.9.9
+openpyxl==3.1.2
+plotly==5.22.0
+
+# --- Dependencias para Prophet y Descargas ---
+# La clave: Forzamos a NumPy a una versión ANTERIOR a la 2.0 para que sea compatible con Prophet
+numpy<2.0
 cmdstanpy==1.2.2
+xlsxwriter==3.2.0
 
-# Prophet se instala al final
+# --- Prophet ---
 prophet==1.1.5
-XlsxWriter
