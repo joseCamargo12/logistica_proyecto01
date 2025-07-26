@@ -12,7 +12,7 @@ st.set_page_config(page_title="FAM analisis de datos", layout="wide", initial_si
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # --- CAMBIO 1: IMPORTAR EL NUEVO COMPONENTE ---
-from components import filtros, resumen, clasificacion, soporte, asignacion, analisis_tiempos, analisis_general, pronosticos
+from components import filtros, resumen, clasificacion, soporte, asignacion, analisis_tiempos, analisis_general, pronosticos, glosario
 from utils import analizar_archivo_cargado, insertar_nuevos_datos, registrar_log_de_carga, to_excel
 
 try:
@@ -120,22 +120,19 @@ else:
         st.warning("No hay datos que coincidan con los filtros seleccionados.")
         num_meses = 1
 
-    # --- CAMBIO 2: AÑADIR LA NUEVA PESTAÑA A LA LISTA ---
+    # --- 2. AÑADIR LA NUEVA PESTAÑA A LA LISTA ---
     tabs = st.tabs([
-        "🔬 Análisis General", 
-        "🚦 Asignación", 
-        "🧮 Capacidad", 
-        "📊 Clasificación", 
-        "📈 Resumen", 
-        "⏱️ Tiempos",
-        "🔮 Pronósticos" # <-- PESTAÑA AÑADIDA
+        "🔬 Análisis General", "🚦 Asignación", "🧮 Capacidad", 
+        "📊 Clasificación", "📈 Resumen", "⏱️ Tiempos", "🔮 Pronósticos",
+        "📖 Glosario" # <-- NUEVA PESTAÑA
     ])
     
-    # --- CAMBIO 3: AÑADIR LA LÓGICA PARA MOSTRAR LA NUEVA PESTAÑA ---
+    # --- 3. AÑADIR LA LÓGICA PARA MOSTRAR LA NUEVA PESTAÑA ---
     with tabs[0]: analisis_general.mostrar_analisis_general(df_filtrado)
     with tabs[1]: asignacion.mostrar_asignacion(df_filtrado)
     with tabs[2]: soporte.mostrar_soporte(df_filtrado)
     with tabs[3]: clasificacion.mostrar_clasificacion(df_filtrado, num_meses)
     with tabs[4]: resumen.mostrar_resumen(df_filtrado)
     with tabs[5]: analisis_tiempos.mostrar_analisis_tiempos(df_filtrado)
-    with tabs[6]: pronosticos.mostrar_pronosticos(df_operaciones) # <-- Se llama a la nueva función
+    with tabs[6]: pronosticos.mostrar_pronosticos(df_operaciones)
+    with tabs[7]: glosario.mostrar_glosario() # <-- NUEVA LÓGICA
