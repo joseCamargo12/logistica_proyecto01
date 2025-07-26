@@ -15,3 +15,4 @@ cmdstanpy==1.2.2
 
 # Prophet se instala al final
 prophet==1.1.5
+XlsxWriter
