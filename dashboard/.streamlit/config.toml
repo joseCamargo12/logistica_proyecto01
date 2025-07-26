@@ -1,0 +1,20 @@
+# ================================================
+# ARCHIVO A CREAR: dashboard/.streamlit/config.toml
+# ================================================
+
+[theme]
+# Paleta de colores profesional y limpia
+# Color primario para botones, enlaces, etc. (Azul corporativo)
+primaryColor = "#1E90FF"
+
+# Color de fondo principal (un gris muy claro)
+backgroundColor = "#F0F2F6"
+
+# Color de fondo secundario (barra lateral, expanders)
+secondaryBackgroundColor = "#FFFFFF"
+
+# Color del texto principal
+textColor = "#31333F"
+
+# Fuente a utilizar
+font = "sans serif"

@@ -1,28 +1,43 @@
 # ================================================
-# ARCHIVO A CREAR: dashboard/components/analisis_general.py
+# ARCHIVO A MODIFICAR: dashboard/components/analisis_general.py
 # ================================================
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 from supabase import Client
 
+@st.cache_data(ttl=600)
+def cargar_logs_de_carga(_supabase: Client):
+    response = _supabase.table('cargas_log').select("*").order('fecha_carga', desc=True).execute()
+    return pd.DataFrame(response.data)
+
 def mostrar_kpis_calidad(supabase: Client):
-    try:
-        log_response = supabase.table('cargas_log').select("*").order('fecha_carga', desc=True).limit(1).single().execute()
-        last_log = log_response.data
-        if last_log:
-            st.subheader("Calidad de la Última Carga de Datos")
-            col1, col2, col3 = st.columns([1, 1, 2])
-            col1.metric("Registros Únicos Cargados", last_log.get('registros_limpios', 0))
-            col2.metric("Registros Duplicados Encontrados", last_log.get('registros_duplicados', 0), delta_color="inverse")
-            
-            calidad_df = pd.DataFrame(last_log.get('calidad_json', []))
-            if not calidad_df.empty:
-                col3.write("**Campos con Datos Faltantes (%):**")
-                col3.dataframe(calidad_df, hide_index=True)
-    except Exception:
-        pass # Si no hay logs, no muestra nada.
-    st.divider()
+    logs_df = cargar_logs_de_carga(supabase)
+    if logs_df.empty:
+        return
+
+    with st.expander("🔍 **Historial y Calidad de Cargas de Datos**", expanded=False):
+        st.subheader("Métricas Históricas Totales")
+        total_cargados = logs_df['registros_limpios'].sum()
+        total_descartados = logs_df['registros_duplicados'].sum()
+        
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total de Cargas Realizadas", len(logs_df))
+        col2.metric("Total de Registros Únicos en BD", f"{int(total_cargados):,}")
+        col3.metric("Total de Registros Descartados", f"{int(total_descartados):,}")
+        
+        st.divider()
+        st.subheader("Detalle de la Última Carga")
+        last_log = logs_df.iloc[0]
+        
+        col1_last, col2_last = st.columns(2)
+        col1_last.metric("Registros Nuevos en la Última Carga", last_log.get('registros_limpios', 0))
+        col2_last.metric("Descartados en la Última Carga", last_log.get('registros_duplicados', 0), delta_color="inverse")
+        
+        calidad_df = pd.DataFrame(last_log.get('calidad_json', []))
+        if not calidad_df.empty:
+            st.write("**Calidad de Datos de la Última Carga:**")
+            st.dataframe(calidad_df, hide_index=True)
 
 def mostrar_analisis_general(df_filtrado):
     st.header("🔬 Análisis General y Tendencias")

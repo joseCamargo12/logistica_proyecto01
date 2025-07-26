@@ -5,4 +5,6 @@ supabase
 psycopg2-binary
 openpyxl
 numpy
-plotly  
+plotly
+streamlit-option-menu
+prophet 
