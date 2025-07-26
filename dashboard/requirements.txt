@@ -7,7 +7,7 @@ streamlit-authenticator
 supabase
 psycopg2-binary
 openpyxl
-numpy
+numpy==1.26.4
 plotly
 
 # Dependencias específicas para Prophet, se instalan primero
