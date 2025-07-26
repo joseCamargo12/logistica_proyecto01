@@ -1,11 +1,11 @@
-# --- START OF FILE components/filtros.py ---
-
+# ================================================
+# ARCHIVO A MODIFICAR: dashboard/components/filtros.py (CORREGIDO)
+# ================================================
 import streamlit as st
 import pandas as pd
-import locale # <-- Nueva importación para el idioma
+import locale
 
-# Configurar el locale a español para que los nombres de los meses salgan correctamente
-# Esto puede variar un poco entre sistemas operativos. 'es_ES' o 'es_ES.UTF-8' son comunes.
+# Configuración del idioma para nombres de meses en español
 try:
     locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 except locale.Error:
@@ -14,84 +14,68 @@ except locale.Error:
     except locale.Error:
         st.sidebar.warning("No se pudo configurar el idioma a español para los meses.")
 
-
 def mostrar_filtros(df):
     with st.sidebar:
-        st.header("🔍 Filtros globales")
+        st.header("🔍 Filtros Globales")
 
         # --- Filtro de Año ---
-        all_years = sorted(df['fecha_file'].dt.year.dropna().astype(int).unique())
-        select_all_years = st.checkbox("Seleccionar todos los años", value=True, key="cb_years")
-        default_years = all_years if select_all_years else []
-        year_range = st.multiselect(
-            "Año de operación", 
-            options=all_years, 
-            default=default_years
-        )
-        
-        st.markdown("---")
-
-        # --- Filtro de Mes ---
-        df_meses_disponibles = df[df['fecha_file'].dt.year.isin(year_range)]
-        if not df_meses_disponibles.empty:
-            df_meses_disponibles_copy = df_meses_disponibles.copy()
-            df_meses_disponibles_copy['display_month'] = df_meses_disponibles_copy['fecha_file'].dt.strftime('%Y-%m %B').str.capitalize()
-            mes_options = sorted(df_meses_disponibles_copy['display_month'].unique())
-            
-            select_all_months = st.checkbox("Seleccionar todos los meses", value=True, key="cb_months")
-            default_months = mes_options if select_all_months else []
-            meses_seleccionados_display = st.multiselect(
-                "Seleccionar Mes(es)",
-                options=mes_options,
-                default=default_months,
-                help="Puedes desmarcar 'Seleccionar todos' para elegir meses específicos."
-            )
+        st.subheader("🗓️ Período")
+        all_years = sorted(df['fecha_file'].dt.year.unique())
+        select_all_years = st.checkbox("Seleccionar todos los años", value=True)
+        if select_all_years:
+            selected_years = st.multiselect("Año(s)", all_years, default=all_years, key="years_multi")
         else:
-            meses_seleccionados_display = []
+            selected_years = st.multiselect("Año(s)", all_years, default=all_years[-1:] if all_years else [], key="years_multi_single")
 
-        st.markdown("---")
+        # --- Filtro de Mes (Corregido) ---
+        df_meses_disponibles = df[df['fecha_file'].dt.year.isin(selected_years)]
+        if not df_meses_disponibles.empty:
+            # Crear una columna 'año_mes_num' para ordenar correctamente
+            df_meses_disponibles['año_mes_num'] = df_meses_disponibles['fecha_file'].dt.strftime('%Y-%m')
+            # Crear la columna de display para el usuario
+            df_meses_disponibles['display_month'] = df_meses_disponibles['fecha_file'].dt.strftime('%B %Y').str.capitalize()
+            
+            # Ordenar las opciones de mes cronológicamente
+            mes_options = df_meses_disponibles.sort_values('año_mes_num')['display_month'].unique()
+            
+            select_all_months = st.checkbox("Seleccionar todos los meses", value=True)
+            if select_all_months:
+                meses_seleccionados_display = st.multiselect("Mes(es)", mes_options, default=list(mes_options))
+            else:
+                meses_seleccionados_display = st.multiselect("Mes(es)", mes_options, default=[])
+
+        st.divider()
+
+        # --- Filtros de Categorías (se mantienen) ---
+        st.subheader("🗂️ Categorías")
         
-        # --- Filtro de Tipo de Operación ---
         tipo_options = sorted(df['tipo'].unique())
-        select_all_tipos = st.checkbox("Seleccionar todos los tipos", value=True, key="cb_tipos")
-        default_tipos = tipo_options if select_all_tipos else []
-        tipo = st.multiselect(
-            "Tipo de operación", 
-            options=tipo_options, 
-            default=default_tipos
-        )
+        tipo = st.multiselect("Tipo de operación", tipo_options, default=tipo_options)
 
-        st.markdown("---")
-
-        # --- Filtro de Operativo ---
         operativo_options = sorted(df['operativo'].unique())
-        select_all_operativos = st.checkbox("Seleccionar todos los operativos", value=True, key="cb_operativos")
-        default_operativos = operativo_options if select_all_operativos else []
-        operativo = st.multiselect(
-            "Operativo", 
-            options=operativo_options, 
-            default=default_operativos
-        )
+        operativo = st.multiselect("Operativo", operativo_options, default=operativo_options)
 
         # --- APLICACIÓN DE FILTROS ---
         df_filtrado = df.copy()
 
-        if not year_range:
-            return pd.DataFrame()
-        df_filtrado = df_filtrado[df_filtrado['fecha_file'].dt.year.isin(year_range)]
+        if not selected_years:
+            return pd.DataFrame() # No mostrar nada si no hay año seleccionado
+        df_filtrado = df_filtrado[df_filtrado['fecha_file'].dt.year.isin(selected_years)]
         
-        if meses_seleccionados_display:
-            df_filtrado['display_month'] = df_filtrado['fecha_file'].dt.strftime('%Y-%m %B').str.capitalize()
+        if 'meses_seleccionados_display' in locals() and meses_seleccionados_display:
+            df_filtrado['display_month'] = df_filtrado['fecha_file'].dt.strftime('%B %Y').str.capitalize()
             df_filtrado = df_filtrado[df_filtrado['display_month'].isin(meses_seleccionados_display)]
-
+        elif 'meses_seleccionados_display' in locals() and not meses_seleccionados_display and not select_all_months:
+            return pd.DataFrame() # No mostrar nada si se deseleccionan todos los meses
+            
         if tipo:
             df_filtrado = df_filtrado[df_filtrado['tipo'].isin(tipo)]
         else:
-             return pd.DataFrame()
+            return pd.DataFrame() # No mostrar nada si no hay tipo seleccionado
             
         if operativo:
             df_filtrado = df_filtrado[df_filtrado['operativo'].isin(operativo)]
         else:
-            return pd.DataFrame()
+            return pd.DataFrame() # No mostrar nada si no hay operativo seleccionado
 
         return df_filtrado
