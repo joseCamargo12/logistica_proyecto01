@@ -6,17 +6,20 @@ import pandas as pd
 from prophet import Prophet
 import plotly.graph_objects as go
 
-@st.cache_data(ttl=3600) # Cachear por 1 hora
+@st.cache_data(ttl=3600) # Cachear por 1 hora para mejorar rendimiento
 def generar_pronostico(_df_historico, periodos):
     """
     Toma el historial de operaciones y genera un pronóstico futuro.
     """
+    # Prophet requiere columnas 'ds' (fecha) y 'y' (valor). Agrupamos por día.
     df_prophet = _df_historico.groupby(_df_historico['fecha_file'].dt.date).size().reset_index(name='y')
     df_prophet.rename(columns={'fecha_file': 'ds'}, inplace=True)
 
-    model = Prophet(daily_seasonality=False, weekly_seasonality=True, yearly_seasonality=True, changoint_prior_scale=0.05)
+    # Crear y entrenar el modelo
+    model = Prophet(daily_seasonality=False, weekly_seasonality=True, yearly_seasonality=True, changepoint_prior_scale=0.05)
     model.fit(df_prophet)
 
+    # Crear dataframe para el futuro y predecir
     future = model.make_future_dataframe(periods=periodos, freq='D')
     forecast = model.predict(future)
     return model, forecast

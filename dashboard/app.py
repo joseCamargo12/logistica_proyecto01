@@ -1,5 +1,5 @@
 # ================================================
-# ARCHIVO: dashboard/app.py (VERSIÓN FINAL CON TODAS LAS FUNCIONALIDADES)
+# ARCHIVO A MODIFICAR: dashboard/app.py (CÓDIGO COMPLETO CON NUEVA PESTAÑA)
 # ================================================
 import streamlit as st
 import pandas as pd
@@ -131,7 +131,7 @@ else:
         "📊 Clasificación", 
         "📈 Resumen", 
         "⏱️ Tiempos",
-        "🔮 Pronósticos" # <-- NUEVA PESTAÑA AÑADIDA
+        "🔮 Pronósticos" # <-- NUEVA PESTAÑA
     ])
     
     # --- CAMBIO 3: AÑADIR LA LÓGICA PARA MOSTRAR LA NUEVA PESTAÑA ---
