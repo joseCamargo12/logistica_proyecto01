@@ -15,11 +15,9 @@ def generar_pronostico(_df_historico, periodos):
     df_prophet = _df_historico.groupby(_df_historico['fecha_file'].dt.date).size().reset_index(name='y')
     df_prophet.rename(columns={'fecha_file': 'ds'}, inplace=True)
 
-    # Crear y entrenar el modelo
     model = Prophet(daily_seasonality=False, weekly_seasonality=True, yearly_seasonality=True, changepoint_prior_scale=0.05)
     model.fit(df_prophet)
 
-    # Crear dataframe para el futuro y predecir
     future = model.make_future_dataframe(periods=periodos, freq='D')
     forecast = model.predict(future)
     return model, forecast

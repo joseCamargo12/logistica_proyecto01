@@ -33,7 +33,6 @@ def mostrar_analisis_tiempos(df_filtrado):
         st.info("No hay operaciones cerradas con fechas válidas para analizar.")
         return
 
-    # --- SECCIÓN 1: TABLA (SIN CAMBIOS) ---
     st.markdown("#### 1. Comparativa de Tiempos: Estándar vs. Realidad (Tabla)")
     df_promedio_real = df_calculo.groupby('tipo')['duracion_real_dias'].mean().reset_index()
     df_promedio_real.rename(columns={'tipo': 'Tipo', 'duracion_real_dias': 'Duración Real Promedio (días)'}, inplace=True)
@@ -45,7 +44,6 @@ def mostrar_analisis_tiempos(df_filtrado):
     
     st.divider()
 
-    # --- SECCIÓN 2: GRÁFICO (REEMPLAZO DEL BOX PLOT) ---
     st.markdown("#### 2. Comparativa de Tiempos: Estándar vs. Realidad (Gráfico)")
     df_grafico = df_final.melt(
         id_vars=['Tipo'], 
@@ -54,13 +52,8 @@ def mostrar_analisis_tiempos(df_filtrado):
         value_name='Días'
     )
     df_grafico.dropna(subset=['Días'], inplace=True)
-
     fig = px.bar(
-        df_grafico,
-        x='Tipo',
-        y='Días',
-        color='Métrica',
-        barmode='group',
+        df_grafico, x='Tipo', y='Días', color='Métrica', barmode='group',
         title="Tiempo Estándar vs. Tiempo Real Promedio por Tipo de Operación",
         labels={'Días': 'Duración en Días', 'Tipo': 'Tipo de Operación'}
     )
@@ -69,7 +62,6 @@ def mostrar_analisis_tiempos(df_filtrado):
 
     st.divider()
 
-    # --- SECCIÓN 3: TABLA DE RENDIMIENTO (SIN CAMBIOS) ---
     st.markdown("#### 3. Rendimiento por Operativo")
     df_operativo_tiempos = df_calculo.groupby('operativo')['duracion_real_dias'].agg(['mean', 'count', 'min', 'max']).reset_index()
     df_operativo_tiempos.rename(columns={'mean': 'Duración Promedio', 'count': 'Nº Op. Cerradas', 'min': 'Más Rápido (días)', 'max': 'Más Lento (días)'}, inplace=True)

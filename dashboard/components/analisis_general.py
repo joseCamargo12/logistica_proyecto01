@@ -16,7 +16,7 @@ def mostrar_kpis_calidad(supabase: Client):
     if logs_df.empty:
         return
 
-    with st.expander("🔍 **Historial y Calidad de Cargas de Datos**", expanded=False):
+    with st.expander("🔍 **Historial y Calidad de Cargas de Datos**", expanded=False): # Agregamos expander
         st.subheader("Métricas Históricas Totales")
         total_cargados = logs_df['registros_limpios'].sum()
         total_descartados = logs_df['registros_duplicados'].sum()
@@ -43,24 +43,20 @@ def mostrar_analisis_general(df_filtrado):
     st.header("🔬 Análisis General y Tendencias")
     
     if df_filtrado.empty:
-        st.warning("No hay datos para analizar con los filtros seleccionados.")
-        return
-        
+        st.warning("No hay datos para analizar con los filtros seleccionados."); return
     df = df_filtrado.copy()
     df.dropna(subset=['fecha_file'], inplace=True)
     if df.empty:
-        st.warning("No hay datos con fechas válidas para mostrar tendencias.")
-        return
+        st.warning("No hay datos con fechas válidas para mostrar tendencias."); return
         
     df['año_mes'] = df['fecha_file'].dt.to_period('M').astype(str)
     
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2);
     with col1:
         st.subheader("Tendencia de Operaciones Mensuales")
         operaciones_por_mes = df.groupby('año_mes')['file'].count().reset_index()
         fig1 = px.line(operaciones_por_mes.sort_values('año_mes'), x='año_mes', y='file', title="Evolución del Nº de Operaciones", labels={'año_mes': 'Mes', 'file': 'Cantidad'}, markers=True)
         st.plotly_chart(fig1, use_container_width=True)
-
     with col2:
         st.subheader("Distribución por Tipo de Operación")
         operaciones_por_tipo = df['tipo'].value_counts().reset_index()

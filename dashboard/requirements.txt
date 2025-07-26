@@ -1,25 +1,17 @@
 ﻿# ================================================
-# ARCHIVO A MODIFICAR: dashboard/requirements.txt (VERSIÓN PARA PRODUCCIÓN)
+# ARCHIVO A MODIFICAR: dashboard/requirements.txt (VERSIÓN SEGURA)
 # ================================================
+streamlit
+pandas
+streamlit-authenticator
+supabase
+psycopg2-binary
+openpyxl
+numpy
+plotly
 
-# --- Librerías base de Streamlit y Datos ---
-streamlit==1.35.0
-pandas==2.2.2
-numpy==1.26.4
-openpyxl==3.1.2
-
-# --- Autenticación y Base de Datos ---
-streamlit-authenticator==0.3.2
-supabase==2.5.1
-psycopg2-binary==2.9.9
-
-# --- Visualización ---
-plotly==5.22.0
-
-# --- Dependencias para Prophet (LA CLAVE DE LA SOLUCIÓN) ---
-# Se instalan ANTES de prophet para asegurar que el entorno esté listo
+# Dependencias específicas para Prophet, se instalan primero
 cmdstanpy==1.2.2
 
-# --- Prophet ---
-# Se instala al final, una vez que sus dependencias están listas
+# Prophet se instala al final
 prophet==1.1.5

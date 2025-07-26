@@ -1,5 +1,5 @@
 # ================================================
-# ARCHIVO A MODIFICAR: dashboard/app.py (CÓDIGO COMPLETO CON NUEVA PESTAÑA)
+# ARCHIVO: dashboard/app.py (VERSIÓN FINAL CON PRONÓSTICOS)
 # ================================================
 import streamlit as st
 import pandas as pd
@@ -26,17 +26,17 @@ except Exception as e:
 try:
     credentials = {
         "usernames": {
-            "admin": {
+            "estrategia": {
                 "name": st.secrets["auth_admin_name"],
                 "password": st.secrets["auth_admin_password_hash"]
             },
-            "usuario": {
+            "fam.team": {
                 "name": st.secrets["auth_user_name"],
                 "password": st.secrets["auth_user_password_hash"]
             }
         }
     }
-    authenticator = stauth.Authenticate(credentials, "cookie_logistica_v4_final", "key_logistica_v4_final", cookie_expiry_days=30)
+    authenticator = stauth.Authenticate(credentials, "cookie_logistica_final", "key_logistica_final", cookie_expiry_days=30)
     authenticator.login()
 except Exception as e:
     st.error(f"Error fatal: No se pudo configurar la autenticación. Revisa tus secretos. Error: {e}")
@@ -50,15 +50,13 @@ st.sidebar.title(f"Bienvenido, *{st.session_state['name']}* 👋")
 authenticator.logout("Cerrar Sesión", "sidebar")
 st.sidebar.divider()
 
-if st.session_state.get("username") == "admin":
+if st.session_state.get("username") == "estrategia":
     with st.sidebar.expander("🔑 **Panel de Administrador**", expanded=True):
+        # ... (Toda la lógica de carga de datos que ya tienes y funciona bien va aquí)
         st.header("📤 Actualizar Datos")
-        
         uploaded_file = st.file_uploader("Sube el archivo de operaciones", type=['xls', 'xlsx'], key="file_uploader")
-
         if 'df_nuevos' not in st.session_state:
             st.session_state.df_nuevos, st.session_state.df_existentes, st.session_state.df_duplicados_internos, st.session_state.resumen_calidad = pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
-
         if uploaded_file:
             if st.button("1. Analizar Archivo", type="secondary", use_container_width=True):
                 with st.spinner("Realizando análisis completo del archivo..."):
@@ -69,7 +67,6 @@ if st.session_state.get("username") == "admin":
                     except Exception as e:
                         st.sidebar.error(f"Error en el análisis: {e}")
                         st.session_state.df_nuevos, st.session_state.df_existentes, st.session_state.df_duplicados_internos, st.session_state.resumen_calidad = pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
-
         if not st.session_state.df_nuevos.empty or not st.session_state.df_existentes.empty or not st.session_state.df_duplicados_internos.empty:
             st.subheader("Resultados del Análisis")
             st.success(f"**{len(st.session_state.df_nuevos)}** registros nuevos para cargar.")
@@ -88,7 +85,7 @@ if st.session_state.get("username") == "admin":
                     st.session_state.df_nuevos, st.session_state.df_existentes, st.session_state.df_duplicados_internos, st.session_state.resumen_calidad = pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
                     st.rerun()
 
-# --- LÓGICA PRINCIPAL DEL DASHBOARD (SIN CAMBIOS) ---
+# --- LÓGICA PRINCIPAL DEL DASHBOARD ---
 @st.cache_data(ttl=300)
 def cargar_datos_desde_bd():
     all_data = []
@@ -131,7 +128,7 @@ else:
         "📊 Clasificación", 
         "📈 Resumen", 
         "⏱️ Tiempos",
-        "🔮 Pronósticos" # <-- NUEVA PESTAÑA
+        "🔮 Pronósticos" # <-- PESTAÑA AÑADIDA
     ])
     
     # --- CAMBIO 3: AÑADIR LA LÓGICA PARA MOSTRAR LA NUEVA PESTAÑA ---
