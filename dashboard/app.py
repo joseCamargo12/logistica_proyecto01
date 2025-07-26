@@ -26,7 +26,7 @@ except Exception as e:
 try:
     credentials = {
         "usernames": {
-            "estrategia": {
+            "estrategia.dev": {
                 "name": st.secrets["auth_admin_name"],
                 "password": st.secrets["auth_admin_password_hash"]
             },
@@ -50,7 +50,7 @@ st.sidebar.title(f"Bienvenido, *{st.session_state['name']}* 👋")
 authenticator.logout("Cerrar Sesión", "sidebar")
 st.sidebar.divider()
 
-if st.session_state.get("username") == "estrategia":
+if st.session_state.get("username") == "estrategia.dev":
     with st.sidebar.expander("🔑 **Panel de Administrador**", expanded=True):
         # ... (Toda la lógica de carga de datos que ya tienes y funciona bien va aquí)
         st.header("📤 Actualizar Datos")
