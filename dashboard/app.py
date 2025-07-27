@@ -4,6 +4,8 @@ from supabase import create_client, Client
 import streamlit_authenticator as stauth
 import sys
 import os
+from streamlit_lottie import st_lottie
+import requests
 
 st.markdown("""
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -17,6 +19,47 @@ st.set_page_config(
     layout="wide"
 )
 
+def inyectar_estilos_compactos():
+    """ Inyecta CSS para reducir los márgenes verticales. """
+    st.markdown("""
+        <style>
+            /* Apunta al contenedor del título principal */
+            .st-emotion-cache-183lzff {
+                padding-bottom: 0rem; /* Reduce el espacio debajo del título */
+            }
+            /* Apunta al contenedor de las pestañas */
+            .st-emotion-cache-1gulkj5 {
+                padding-top: 1rem; /* Reduce el espacio encima de las pestañas */
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
+@st.cache_resource
+def load_lottie_url(url: str):
+    """ Carga una animación Lottie desde una URL. """
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+def inyectar_iconos_en_tabs():
+    st.markdown("""
+        <style>
+            button[data-baseweb="tab"] {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            button[data-baseweb="tab"]:nth-child(1)::before { font-family: "bootstrap-icons"; content: "\\f428"; } /* Análisis */
+            button[data-baseweb="tab"]:nth-child(2)::before { font-family: "bootstrap-icons"; content: "\\f54d"; } /* Asignación */
+            button[data-baseweb="tab"]:nth-child(3)::before { font-family: "bootstrap-icons"; content: "\\f1c8"; } /* Capacidad */
+            button[data-baseweb="tab"]:nth-child(4)::before { font-family: "bootstrap-icons"; content: "\\f551"; } /* Clasificación */
+            button[data-baseweb="tab"]:nth-child(5)::before { font-family: "bootstrap-icons"; content: "\\f223"; } /* Resumen */
+            button[data-baseweb="tab"]:nth-child(6)::before { font-family: "bootstrap-icons"; content: "\\f28c"; } /* Tiempos */
+            button[data-baseweb="tab"]:nth-child(7)::before { font-family: "bootstrap-icons"; content: "\\f1f3"; } /* Pronósticos */
+            button[data-baseweb="tab"]:nth-child(8)::before { font-family: "bootstrap-icons"; content: "\\f4f6"; } /* Ayuda */
+        </style>
+    """, unsafe_allow_html=True)
 
 def mostrar_footer():
     st.divider()
@@ -69,8 +112,8 @@ except Exception as e:
 if not st.session_state.get("authentication_status"):
     st.stop()
 
-# --- SIDEBAR Y LÓGICA DE CARGA DE DATOS (SIN CAMBIOS) ---
-# --- SIDEBAR Y LÓGICA DE CARGA DE DATOS (AJUSTADO Y ESTILIZADO) ---
+inyectar_estilos_compactos()
+
 with st.sidebar:
     with st.container():
         col1, col2 = st.columns([1, 5], gap="small")
@@ -170,13 +213,45 @@ def cargar_datos_desde_bd():
     df.dropna(subset=['fecha_file'], inplace=True)
     return df
 
-st.markdown("""
-<h1 style="font-size: 49px;">
-<i class="bi bi-graph-up-arrow"></i> Análisis de Operaciones
-</h1>
-""", unsafe_allow_html=True)
+# CÓDIGO AVANZADO (NO RECOMENDADO PARA EL TÍTULO PRINCIPAL)
+st.markdown(
+    """
+    <style>
+        /* Oculta el título h1 por defecto que crea Streamlit */
+        .st-emotion-cache-183lzff { 
+            display: none;
+        }
+    </style>
+    <h1><i class="bi bi-graph-up-arrow"></i> FAM | Análisis de Operaciones</h1>
+    """,
+    unsafe_allow_html=True
+)
+# st.title("Un título falso para que Streamlit no se queje") # A veces se necesita un placeholder
 
-df_operaciones = cargar_datos_desde_bd()
+# --- Lógica de carga con animación ---
+# Usamos st.session_state para cargar los datos solo una vez por sesión
+if 'df_operaciones' not in st.session_state or st.session_state.df_operaciones.empty:
+    # URL de una animación de Lottie (puedes buscar otras en lottiefiles.com)
+    lottie_url = "https://lottie.host/89c2b271-9337-46b5-8c38-7012019b1689/VCL2goaisq.json"
+    lottie_animation = load_lottie_url(lottie_url)
+    
+    # Creamos un contenedor centrado para la animación
+    with st.container():
+        st.write("") # Espacio en blanco para centrar verticalmente
+        cols = st.columns([1, 1, 1])
+        with cols[1]: # Columna central
+            if lottie_animation:
+                st_lottie(lottie_animation, speed=1, height=200, key="loading")
+            st.info("Cargando datos por primera vez. Esto puede tardar un momento...")
+    
+    # Este es el momento en que se cargan los datos
+    st.session_state.df_operaciones = cargar_datos_desde_bd()
+    # Volvemos a ejecutar el script para quitar la animación y mostrar el dashboard
+    st.rerun() 
+
+# Una vez cargados, usamos los datos desde el session_state
+df_operaciones = st.session_state.df_operaciones
+# ==========================================================
 
 if df_operaciones.empty:
     st.warning("Aún no hay datos. Sube un archivo para comenzar.")
@@ -191,14 +266,18 @@ else:
         st.warning("No hay datos que coincidan con los filtros seleccionados.")
         num_meses = 1
 
-    # --- 2. AÑADIR LA NUEVA PESTAÑA A LA LISTA ---
     tabs = st.tabs([
-    "📊 Análisis", "📈 Asignación", "⚙️ Capacidad",
-    "🗂️ Clasificación", "📋 Resumen", "🕒 Tiempos",
-    "📈 Pronósticos", "ℹ️ Ayuda"
+        "Análisis General", "Asignación", "Capacidad",
+        "Clasificación", "Resumen", "Tiempos",
+        "Pronósticos", "Ayuda"
     ])
+    # --- FIN DE LA MODIFICACIÓN #2 ---
+    
+    # --- INICIO DE LA MODIFICACIÓN #3: Llamada a la función de CSS ---
+    # Esta línea aplica la magia de los iconos
+    inyectar_iconos_en_tabs()
+    # --- FIN DE LA MODIFICACIÓN #3 ---
 
-    # --- 3. AÑADIR LA LÓGICA PARA MOSTRAR LA NUEVA PESTAÑA ---
     with tabs[0]: analisis_general.mostrar_analisis_general(df_filtrado)
     with tabs[1]: asignacion.mostrar_asignacion(df_filtrado)
     with tabs[2]: soporte.mostrar_soporte(df_filtrado)
@@ -208,4 +287,5 @@ else:
     with tabs[6]: pronosticos.mostrar_pronosticos(df_operaciones)
     with tabs[7]: glosario.mostrar_glosario_y_soporte()
 
-mostrar_footer()
+    mostrar_footer()
+    inyectar_estilos_compactos()

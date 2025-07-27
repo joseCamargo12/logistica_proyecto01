@@ -22,7 +22,7 @@ def calcular_soporte(df):
     return df_soporte
 
 def mostrar_soporte(df_filtrado):
-    st.subheader("🧮 Soporte de Carga Máxima por Operativo")
+    st.markdown('<h3><i class="bi bi-box-seam"></i> Soporte de Carga Máxima por Operativo</h3>', unsafe_allow_html=True)
     df_calculado = calcular_soporte(df_filtrado)
     if df_calculado.empty:
         st.warning("No hay datos para mostrar."); return
@@ -31,7 +31,7 @@ def mostrar_soporte(df_filtrado):
     
     # --- GRÁFICO AÑADIDO ---
     st.divider()
-    st.subheader("📊 Visualización de Carga por Operativo (Top 20)")
+    st.markdown('<h3><i class="bi bi-layers-fill"></i> Visualización de Carga por Operativo (Top 20)</h3>', unsafe_allow_html=True)
     
     # Agrupamos por operativo para tener una visión general
     df_agrupado = df_calculado.groupby('operativo').agg({

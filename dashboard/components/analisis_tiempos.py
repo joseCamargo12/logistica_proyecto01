@@ -17,7 +17,7 @@ def calcular_duracion_real(df):
     return df_calc
 
 def mostrar_analisis_tiempos(df_filtrado):
-    st.subheader("⏱️ Análisis de Tiempos de Ciclo y Cumplimiento")
+    st.markdown('<h3><i class="bi bi-clock-history"></i> Análisis de Tiempos de Ciclo y Cumplimiento</h3>', unsafe_allow_html=True)
     if df_filtrado.empty:
         st.warning("No hay datos para calcular los tiempos.")
         return
@@ -37,7 +37,7 @@ def mostrar_analisis_tiempos(df_filtrado):
     df_final['Duración Real Promedio (días)'] = df_final['Duración Real Promedio (días)'].round(1)
     st.dataframe(df_final, use_container_width=True)
     if not df_final.empty:
-        st.download_button("📥 Descargar Tabla Comparativa", to_excel(df_final), "comparativa_tiempos.xlsx")
+        st.download_button("Descargar Tabla Comparativa", to_excel(df_final), "comparativa_tiempos.xlsx")
     
     st.divider()
 
@@ -65,5 +65,5 @@ def mostrar_analisis_tiempos(df_filtrado):
     df_operativo_tiempos['Duración Promedio'] = df_operativo_tiempos['Duración Promedio'].round(1)
     st.dataframe(df_operativo_tiempos.sort_values(by='Duración Promedio'), use_container_width=True)
     if not df_operativo_tiempos.empty:
-        st.download_button("📥 Descargar Rendimiento por Operativo", to_excel(df_operativo_tiempos), "rendimiento_operativo.xlsx")
+        st.download_button("Descargar Rendimiento por Operativo", to_excel(df_operativo_tiempos), "rendimiento_operativo.xlsx")
 

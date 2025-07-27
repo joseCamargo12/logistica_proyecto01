@@ -6,7 +6,7 @@ from .analisis_tiempos import calcular_duracion_real
 from utils import to_excel
 
 def mostrar_asignacion(df_filtrado):
-    st.subheader("🚦 Guía Inteligente para Asignación de Nuevas Cargas")
+    st.markdown('<h3><i class="bi bi-sign-turn-right-fill"></i> Guía Inteligente para Asignación de Nuevas Cargas</h3>', unsafe_allow_html=True)
     if df_filtrado.empty:
         st.warning("No hay datos para generar una guía de asignación."); return
         
@@ -47,7 +47,7 @@ def mostrar_asignacion(df_filtrado):
     
     # --- GRÁFICO AÑADIDO ---
     st.divider()
-    st.subheader("🏆 Ranking Visual de Asignación")
+    st.markdown('<h3><i class="bi bi-trophy-fill"></i> Ranking Visual de Asignación</h3>', unsafe_allow_html=True)
     
     # Tomamos el top 15 para no saturar el gráfico
     df_chart = df_guia_final.sort_values('Índice de Asignación', ascending=False).head(15)

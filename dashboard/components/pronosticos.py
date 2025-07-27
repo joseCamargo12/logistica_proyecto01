@@ -29,7 +29,7 @@ def generar_pronostico_filtrado(_df_historico, periodos, tipo_operacion=None):
     return model, forecast
 
 def mostrar_pronosticos(df_operaciones):
-    st.header("🔮 Pronóstico de Carga de Trabajo Futura")
+    st.markdown('<h2><i class="bi bi-calendar-week"></i> Pronóstico de Carga de Trabajo Futura</h2>', unsafe_allow_html=True)
     st.info("Utiliza esta herramienta para predecir el volumen de operaciones futuras, ya sea en general o para un tipo de operación específico. Esto te ayudará a anticipar la demanda y planificar recursos.")
 
     col1, col2 = st.columns([1, 2])

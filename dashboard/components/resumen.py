@@ -3,7 +3,7 @@ import pandas as pd
 from utils import to_excel
 
 def mostrar_resumen(df):
-    st.subheader("📈 Resumen de Operaciones por Operativo y Tipo")
+    st.markdown('<h3><i class="bi bi-card-checklist"></i> Resumen de Operaciones por Operativo y Tipo</h3>', unsafe_allow_html=True)
     if df.empty:
         st.warning("No hay datos para mostrar.")
         return
@@ -13,7 +13,7 @@ def mostrar_resumen(df):
     if not df_resumen.empty:
         datos_excel = to_excel(df_resumen)
         st.download_button(
-            label="📥 Descargar Resumen en Excel",
+            label="Descargar Resumen en Excel",
             data=datos_excel,
             file_name="resumen_operaciones.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

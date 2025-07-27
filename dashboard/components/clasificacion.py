@@ -5,7 +5,7 @@ import plotly.express as px
 from utils import to_excel
 
 def mostrar_clasificacion(df, numero_de_meses_analizados):
-    st.subheader("📊 Clasificación de Flujo Operativo")
+    st.markdown('<h3><i class="bi bi-sort-down"></i> Clasificación de Flujo Operativo</h3>', unsafe_allow_html=True)
     st.info(f"El promedio mensual se calcula sobre un período de **{numero_de_meses_analizados}** meses.")
     if df.empty:
         st.warning("No hay datos para mostrar."); return

@@ -7,17 +7,20 @@ try:
 except:
     pass
 
-st.markdown("""
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-""", unsafe_allow_html=True)
+# NOTA: La carga del CSS de Bootstrap ya la haces en app.py,
+# así que no es necesario volver a ponerla aquí.
 
 def mostrar_filtros(df):
     with st.sidebar:
-        st.markdown(""" <h2 style='font-size:25px;'> <i class="bi bi-funnel-fill"></i> Filtros Globales </h2> """, unsafe_allow_html=True)
+        # Usamos markdown para el título principal con icono
+        st.markdown('<h3><i class="bi bi-funnel-fill"></i> Filtros Globales</h3>', unsafe_allow_html=True)
         st.divider()
 
-        # --- Filtro de Período con Expanders ---
-        with st.expander("🗓️ **Período de Tiempo**", expanded=True):
+        # --- Filtro de Período con Expanders y Título con Ícono ---
+        with st.expander("Seleccionar Fechas", expanded=True):
+            # Usamos markdown para crear nuestro propio título con icono dentro del expander
+            st.markdown('<h5><i class="bi bi-calendar3"></i> Período de Tiempo</h5>', unsafe_allow_html=True)
+            
             all_years = sorted(df['fecha_file'].dt.year.unique())
             select_all_years = st.checkbox("Todos los años", value=True, key="cb_years")
             default_years = all_years if select_all_years else (all_years[-1:] if all_years else [])
@@ -34,24 +37,39 @@ def mostrar_filtros(df):
                 default_months = list(mes_options) if select_all_months else []
                 meses_seleccionados_display = st.multiselect("Mes(es)", mes_options, default=default_months)
 
-        # --- Filtros de Categorías con Expanders ---
-        with st.expander("🗂️ **Categorías de Operación**", expanded=True):
+        # --- Filtros de Categorías con Expanders y Título con Ícono ---
+        with st.expander("Operaciones", expanded=True):
+            st.markdown('<h5><i class="bi bi-tags-fill"></i> Categorías de Operación</h5>', unsafe_allow_html=True)
+
             tipo_options = sorted(df['tipo'].unique())
             tipo = st.multiselect("Tipo de operación", tipo_options, default=tipo_options)
 
             operativo_options = sorted(df['operativo'].unique())
             operativo = st.multiselect("Operativo", operativo_options, default=operativo_options)
 
-        # --- APLICACIÓN DE FILTROS ---
-        df_filtrado = df[
-            (df['fecha_file'].dt.year.isin(selected_years)) &
-            (df['tipo'].isin(tipo)) &
-            (df['operativo'].isin(operativo))
-        ]
-        
+        # --- APLICACIÓN DE FILTROS (SIN NINGÚN CAMBIO) ---
+        df_filtrado = df.copy()
+
+        if selected_years:
+            df_filtrado = df_filtrado[df_filtrado['fecha_file'].dt.year.isin(selected_years)]
+        else:
+            return pd.DataFrame()
+
         if 'meses_seleccionados_display' in locals() and not select_all_months:
-            df_filtrado['display_month'] = df_filtrado['fecha_file'].dt.strftime('%B %Y').str.capitalize()
-            df_filtrado = df_filtrado[df_filtrado['display_month'].isin(meses_seleccionados_display)]
-            
+             if meses_seleccionados_display:
+                df_filtrado['display_month'] = df_filtrado['fecha_file'].dt.strftime('%B %Y').str.capitalize()
+                df_filtrado = df_filtrado[df_filtrado['display_month'].isin(meses_seleccionados_display)]
+             else:
+                return pd.DataFrame()
+        
+        if tipo:
+            df_filtrado = df_filtrado[df_filtrado['tipo'].isin(tipo)]
+        else:
+            return pd.DataFrame()
+
+        if operativo:
+            df_filtrado = df_filtrado[df_filtrado['operativo'].isin(operativo)]
+        else:
+            return pd.DataFrame()
+
         return df_filtrado
-    

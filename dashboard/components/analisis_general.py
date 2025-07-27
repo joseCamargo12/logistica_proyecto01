@@ -13,7 +13,7 @@ def mostrar_kpis_calidad(supabase: Client):
     if logs_df.empty:
         return
 
-    with st.expander("🔍 **Historial y Calidad de Cargas de Datos**", expanded=False): # Agregamos expander
+    with st.expander("Historial y Calidad de Cargas de Datos", expanded=False):
         st.subheader("Métricas Históricas Totales")
         total_cargados = logs_df['registros_limpios'].sum()
         total_descartados = logs_df['registros_duplicados'].sum()
@@ -37,7 +37,7 @@ def mostrar_kpis_calidad(supabase: Client):
             st.dataframe(calidad_df, hide_index=True)
 
 def mostrar_analisis_general(df_filtrado):
-    st.header("🔬 Análisis General y Tendencias")
+    st.markdown('<h2><i class="bi bi-bar-chart-line-fill"></i> Análisis General y Tendencias</h2>', unsafe_allow_html=True)
     
     if df_filtrado.empty:
         st.warning("No hay datos para analizar con los filtros seleccionados."); return
