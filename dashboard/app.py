@@ -1,4 +1,20 @@
+# ==========================================================
+# CÓDIGO CORREGIDO Y A PRUEBA DE BALAS PARA app.py
+# ==========================================================
 import streamlit as st
+
+# --- PASO 1: CONFIGURACIÓN DE PÁGINA (DEBE SER LO PRIMERO) ---
+# La única excepción son los imports y las definiciones de variables simples.
+logo_url = "https://res.cloudinary.com/dwqahfw5n/image/upload/v1753630828/copia-removebg-preview_yced1y.png"
+
+st.set_page_config(
+    page_title="FAM Logística | BI Dashboard",
+    page_icon=logo_url, 
+    layout="wide"
+)
+
+# --- PASO 2: IMPORTS DEL PROYECTO Y LIBRERÍAS ---
+# Ahora que la página ya está configurada, podemos importar todo lo demás.
 import pandas as pd
 from supabase import create_client, Client
 import streamlit_authenticator as stauth
@@ -7,17 +23,18 @@ import os
 from streamlit_lottie import st_lottie
 import requests
 
+from components import filtros, resumen, clasificacion, soporte, asignacion, analisis_tiempos, analisis_general, pronosticos, glosario
+from utils import analizar_archivo_cargado, insertar_nuevos_datos, registrar_log_de_carga, to_excel
+
+# --- PASO 3: COMANDOS DE STREAMLIT ---
+# Ahora sí podemos ejecutar st.markdown y cualquier otro comando.
 st.markdown("""
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 """, unsafe_allow_html=True)
 
-logo_url = "https://res.cloudinary.com/dwqahfw5n/image/upload/v1753630828/copia-removebg-preview_yced1y.png"
 
-st.set_page_config(
-    page_title="FAM Logística | BI Dashboard",  # Nombre de la empresa y propósito
-    page_icon=logo_url, 
-    layout="wide"
-)
+# --- PASO 4: DEFINICIÓN DE FUNCIONES ---
+# El resto de tu código (definiciones de funciones, etc.) va aquí.
 
 def inyectar_estilos_compactos():
     """ Inyecta CSS para reducir los márgenes verticales. """
@@ -116,14 +133,16 @@ inyectar_estilos_compactos()
 
 with st.sidebar:
     with st.container():
-        col1, col2 = st.columns([1, 5], gap="small")
-        
+        col1, col2 = st.columns([1.2, 5], gap="small")
+
         with col1:
             st.markdown(
                 f"""
-                <a href="https://www.estrategiaempresarial.com" target="_blank">
-                    <img src="{logo_url}" width="55" style="border-radius: 8px; margin-top: 2px;" />
-                </a>
+                <div style="display: flex; align-items: center; height: 60px;">
+                    <a href="https://www.estrategiaempresarial.com" target="_blank">
+                        <img src="{logo_url}" width="50" style="border-radius: 7px;" />
+                    </a>
+                </div>
                 """,
                 unsafe_allow_html=True
             )
@@ -131,11 +150,11 @@ with st.sidebar:
         with col2:
             st.markdown(
                 """
-                <div style="margin-top: 6px; line-height: 1.3;">
-                    <span style="font-size: 16px; font-weight: 700; color: #222;">
+                <div style="display: flex; flex-direction: column; justify-content: center; height: 60px; line-height: 1.2;">
+                    <span style="font-size: 18px; font-weight: 700; color: #222;">
                         Estrategia Empresarial
-                    </span><br>
-                    <span style="font-size: 14px; color: #444;">
+                    </span>
+                    <span style="font-size: 16px; color: #444;">
                         te da la bienvenida <b>FAM TEAM</b>
                     </span>
                 </div>
@@ -144,12 +163,13 @@ with st.sidebar:
             )
 
     st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: 25px;'></div>", unsafe_allow_html=True)
     
     authenticator.logout("Cerrar Sesión", "sidebar")
 
-
-
 st.sidebar.divider()
+
+
 
 if st.session_state.get("username") == "estrategia.dev":
     # Título con ícono desde Bootstrap Icons
@@ -212,6 +232,8 @@ def cargar_datos_desde_bd():
         if col in df.columns: df[col] = pd.to_datetime(df[col], errors='coerce')
     df.dropna(subset=['fecha_file'], inplace=True)
     return df
+
+df_operaciones = cargar_datos_desde_bd()
 
 # CÓDIGO AVANZADO (NO RECOMENDADO PARA EL TÍTULO PRINCIPAL)
 st.markdown(
