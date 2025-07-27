@@ -19,6 +19,4 @@ xlsxwriter==3.2.0
 
 # --- Prophet ---
 prophet==1.1.5
-plotly==6.2.0
-XlsxWriter
 plotly==5.22.0
