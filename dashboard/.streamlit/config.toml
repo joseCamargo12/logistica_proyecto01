@@ -1,10 +1,6 @@
-# ================================================
-# ARCHIVO A CREAR: dashboard/.streamlit/config.toml
-# ================================================
-
 [theme]
-primaryColor = "#1E90FF"
-backgroundColor = "#F0F2F6"
-secondaryBackgroundColor = "#FFFFFF"
-textColor = "#31333F"
+primaryColor = "#1E1E1E"                # Negro profundo para botones y acentos
+backgroundColor = "#ffffffff"            # Fondo blanco para máxima claridad
+secondaryBackgroundColor = "#F2F2F2"   # Gris claro para paneles o tarjetas
+textColor = "#2E2E2E"                  # Gris oscuro para mejor contraste con fondo blanco
 font = "sans serif"

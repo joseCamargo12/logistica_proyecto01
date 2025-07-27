@@ -1,5 +1,3 @@
-# archivo: dashboard/components/resumen.py
-
 import streamlit as st
 import pandas as pd
 from utils import to_excel
@@ -22,3 +20,4 @@ def mostrar_resumen(df):
         )
     total_operaciones = df.shape[0]
     st.metric(label="Total de operaciones (según filtros)", value=f"{total_operaciones:,}")
+

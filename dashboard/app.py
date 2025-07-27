@@ -1,6 +1,3 @@
-# ================================================
-# ARCHIVO: dashboard/app.py (VERSIÓN FINAL CON PRONÓSTICOS)
-# ================================================
 import streamlit as st
 import pandas as pd
 from supabase import create_client, Client
@@ -8,8 +5,35 @@ import streamlit_authenticator as stauth
 import sys
 import os
 
-st.set_page_config(page_title="FAM analisis de datos", layout="wide", initial_sidebar_state="expanded")
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+st.markdown("""
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+""", unsafe_allow_html=True)
+
+logo_url = "https://res.cloudinary.com/dwqahfw5n/image/upload/v1753630828/copia-removebg-preview_yced1y.png"
+
+st.set_page_config(
+    page_title="FAM Logística | BI Dashboard",  # Nombre de la empresa y propósito
+    page_icon=logo_url, 
+    layout="wide"
+)
+
+
+def mostrar_footer():
+    st.divider()
+    
+    # Creamos 3 columnas para centrar el contenido
+    _, col_mid, _ = st.columns([1, 2, 1]) # Columnas vacías a los lados para centrar
+    
+    with col_mid:
+        st.markdown(
+            f"""
+            <div style="text-align: center; color: gray; font-size: 0.9rem;">
+                <img src="{logo_url}" width="40" style="vertical-align: middle; margin-right: 10px;">
+                Desarrollado por <a href='https://estrategiaempresarial.com.co'text-decoration: none; color: #1E90FF; font-weight: bold;'>Estrategia Empresatial
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 # --- CAMBIO 1: IMPORTAR EL NUEVO COMPONENTE ---
 from components import filtros, resumen, clasificacion, soporte, asignacion, analisis_tiempos, analisis_general, pronosticos, glosario
@@ -46,14 +70,56 @@ if not st.session_state.get("authentication_status"):
     st.stop()
 
 # --- SIDEBAR Y LÓGICA DE CARGA DE DATOS (SIN CAMBIOS) ---
-st.sidebar.title(f"Bienvenido, *{st.session_state['name']}* 👋")
-authenticator.logout("Cerrar Sesión", "sidebar")
+# --- SIDEBAR Y LÓGICA DE CARGA DE DATOS (AJUSTADO Y ESTILIZADO) ---
+with st.sidebar:
+    with st.container():
+        col1, col2 = st.columns([1, 5], gap="small")
+        
+        with col1:
+            st.markdown(
+                f"""
+                <a href="https://www.estrategiaempresarial.com" target="_blank">
+                    <img src="{logo_url}" width="55" style="border-radius: 8px; margin-top: 2px;" />
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
+
+        with col2:
+            st.markdown(
+                """
+                <div style="margin-top: 6px; line-height: 1.3;">
+                    <span style="font-size: 16px; font-weight: 700; color: #222;">
+                        Estrategia Empresarial
+                    </span><br>
+                    <span style="font-size: 14px; color: #444;">
+                        te da la bienvenida <b>FAM TEAM</b>
+                    </span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+    
+    authenticator.logout("Cerrar Sesión", "sidebar")
+
+
+
 st.sidebar.divider()
 
 if st.session_state.get("username") == "estrategia.dev":
-    with st.sidebar.expander("🔑 **Panel de Administrador**", expanded=True):
+    # Título con ícono desde Bootstrap Icons
+    st.sidebar.markdown("""
+    <span style="font-size:18px;">
+        <i class="bi bi-person-gear"></i> <strong>Panel de Administrador</strong>
+    </span>
+    """, unsafe_allow_html=True)
+
+    # Expander debajo
+    with st.sidebar.expander("Opciones", expanded=True):
         # ... (Toda la lógica de carga de datos que ya tienes y funciona bien va aquí)
-        st.header("📤 Actualizar Datos")
+        st.markdown('<h2><i class="bi bi-cloud-arrow-up"></i> Actualizar Datos</h2>', unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Sube el archivo de operaciones", type=['xls', 'xlsx'], key="file_uploader")
         if 'df_nuevos' not in st.session_state:
             st.session_state.df_nuevos, st.session_state.df_existentes, st.session_state.df_duplicados_internos, st.session_state.resumen_calidad = pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
@@ -73,7 +139,7 @@ if st.session_state.get("username") == "estrategia.dev":
             st.info(f"**{len(st.session_state.df_existentes)}** registros ya existentes en la BD.")
             if not st.session_state.df_duplicados_internos.empty:
                 st.warning(f"**{len(st.session_state.df_duplicados_internos)}** filas duplicadas en el archivo (descartadas).")
-                st.download_button(label="📥 Descargar Reporte de Duplicados", data=to_excel(st.session_state.df_duplicados_internos), file_name="reporte_duplicados.xlsx", use_container_width=True)
+                st.download_button( label="Descargar Reporte de Duplicados", data=to_excel(st.session_state.df_duplicados_internos), file_name="reporte_duplicados.xlsx", use_container_width=True, key="descargar_duplicados" )
             if not st.session_state.resumen_calidad.empty:
                 st.subheader("Calidad de los Datos Nuevos")
                 st.dataframe(st.session_state.resumen_calidad, use_container_width=True)
@@ -104,7 +170,12 @@ def cargar_datos_desde_bd():
     df.dropna(subset=['fecha_file'], inplace=True)
     return df
 
-st.title("📊 Análisis de Operaciones")
+st.markdown("""
+<h1 style="font-size: 49px;">
+<i class="bi bi-graph-up-arrow"></i> Análisis de Operaciones
+</h1>
+""", unsafe_allow_html=True)
+
 df_operaciones = cargar_datos_desde_bd()
 
 if df_operaciones.empty:
@@ -122,11 +193,11 @@ else:
 
     # --- 2. AÑADIR LA NUEVA PESTAÑA A LA LISTA ---
     tabs = st.tabs([
-        "🔬 Análisis General", "🚦 Asignación", "🧮 Capacidad", 
-        "📊 Clasificación", "📈 Resumen", "⏱️ Tiempos", "🔮 Pronósticos",
-        "📖 Glosario" # <-- NUEVA PESTAÑA
+    "📊 Análisis", "📈 Asignación", "⚙️ Capacidad",
+    "🗂️ Clasificación", "📋 Resumen", "🕒 Tiempos",
+    "📈 Pronósticos", "ℹ️ Ayuda"
     ])
-    
+
     # --- 3. AÑADIR LA LÓGICA PARA MOSTRAR LA NUEVA PESTAÑA ---
     with tabs[0]: analisis_general.mostrar_analisis_general(df_filtrado)
     with tabs[1]: asignacion.mostrar_asignacion(df_filtrado)
@@ -135,4 +206,6 @@ else:
     with tabs[4]: resumen.mostrar_resumen(df_filtrado)
     with tabs[5]: analisis_tiempos.mostrar_analisis_tiempos(df_filtrado)
     with tabs[6]: pronosticos.mostrar_pronosticos(df_operaciones)
-    with tabs[7]: glosario.mostrar_glosario() # <-- NUEVA LÓGICA
+    with tabs[7]: glosario.mostrar_glosario_y_soporte()
+
+mostrar_footer()

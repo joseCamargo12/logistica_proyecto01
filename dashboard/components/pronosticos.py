@@ -1,6 +1,3 @@
-# ================================================
-# ARCHIVO A MODIFICAR: dashboard/components/pronosticos.py (VERSIÓN INTUITIVA)
-# ================================================
 import streamlit as st
 import pandas as pd
 from prophet import Prophet

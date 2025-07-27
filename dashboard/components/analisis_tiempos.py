@@ -1,6 +1,3 @@
-# ================================================
-# ARCHIVO A MODIFICAR: dashboard/components/analisis_tiempos.py
-# ================================================
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -69,3 +66,4 @@ def mostrar_analisis_tiempos(df_filtrado):
     st.dataframe(df_operativo_tiempos.sort_values(by='Duración Promedio'), use_container_width=True)
     if not df_operativo_tiempos.empty:
         st.download_button("📥 Descargar Rendimiento por Operativo", to_excel(df_operativo_tiempos), "rendimiento_operativo.xlsx")
+

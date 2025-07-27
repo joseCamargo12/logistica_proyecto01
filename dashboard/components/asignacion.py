@@ -1,6 +1,3 @@
-# ================================================
-# ARCHIVO A MODIFICAR: dashboard/components/asignacion.py
-# ================================================
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -67,3 +64,5 @@ def mostrar_asignacion(df_filtrado):
     fig.update_layout(yaxis={'categoryorder':'total ascending'})
     st.plotly_chart(fig, use_container_width=True)
     st.info("Este gráfico muestra los mejores candidatos para recibir nuevas cargas. Una barra más larga indica una mejor combinación de disponibilidad y eficiencia.")
+
+

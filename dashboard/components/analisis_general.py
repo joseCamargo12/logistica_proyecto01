@@ -1,6 +1,3 @@
-# ================================================
-# ARCHIVO A MODIFICAR: dashboard/components/analisis_general.py
-# ================================================
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -68,3 +65,4 @@ def mostrar_analisis_general(df_filtrado):
     carga_por_operativo = df['operativo'].value_counts().reset_index()
     fig3 = px.bar(carga_por_operativo.sort_values('count', ascending=False).head(15), x='operativo', y='count', title="Operaciones por Operativo (Top 15)", labels={'operativo': 'Operativo', 'count': 'Cantidad'}, color='operativo')
     st.plotly_chart(fig3, use_container_width=True)
+

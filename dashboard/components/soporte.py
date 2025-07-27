@@ -1,6 +1,3 @@
-# ================================================
-# ARCHIVO A MODIFICAR: dashboard/components/soporte.py
-# ================================================
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -60,3 +57,5 @@ def mostrar_soporte(df_filtrado):
     fig.update_layout(barmode='stack')
     st.plotly_chart(fig, use_container_width=True)
     st.info("Cada barra representa la capacidad total de un operativo. La sección roja son las cargas actuales y la verde es el espacio disponible para nuevas operaciones.")
+
+

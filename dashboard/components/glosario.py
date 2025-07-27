@@ -1,61 +1,85 @@
-# ================================================
-# ARCHIVO A MODIFICAR: dashboard/components/glosario.py (VERSIÓN COMPLETA)
-# ================================================
 import streamlit as st
 
-def mostrar_glosario():
-    st.header("📖 Guía del Dashboard y Metodología")
-    st.info("Esta sección explica el propósito de cada pestaña y cómo se calculan las métricas clave para ayudar a la toma de decisiones.")
+def mostrar_glosario_y_soporte():
+    st.header("💡 Guía de Usuario y Soporte Técnico")
+    st.info("Aquí encontrarás quién desarrolló esta herramienta, cómo contactarlo y el propósito de cada módulo.")
     st.divider()
 
-    # Usamos columnas para organizar mejor los expanders
+    # ==== INFORMACIÓN DEL DESARROLLADOR ====
+    st.subheader("👨‍💻 Desarrollado por")
+    st.markdown("""
+    Esta plataforma fue desarrollada a medida por **[Estrategia Empresarial](https://estrategiaempresarial.com.co/)** para potenciar el análisis de datos de **FAM Logística**.
+
+    Si encuentras algún problema, tienes una idea para una nueva funcionalidad o necesitas soporte técnico, no dudes en contactarme:
+
+    ---
+    **Camilo Camargo**  
+    *Consultor*
+
+    - 💬 **WhatsApp:** +57 313 8300526  
+    - 📧 **Correo:** camilo.camargo@estrategiaempresarial.com.co  
+    - 🌐 **Instagram:** [@estrategia__empresarial](https://www.instagram.com/estrategia__empresarial)
+    """)
+
+    st.success("¡Tu feedback es valioso para seguir mejorando esta herramienta!")
+    st.divider()
+
+    # ==== EXPLICACIÓN DE LOS MÓDULOS ====
+    st.subheader("📚 ¿Cómo funciona cada módulo?")
     col1, col2 = st.columns(2)
 
     with col1:
         with st.expander("🔬 **Análisis General**", expanded=True):
-            st.write("""
-            **Propósito:** Ofrecer una vista panorámica del estado de las operaciones.
-            - **Tendencia de Operaciones:** Muestra el volumen de trabajo a lo largo del tiempo. Permite identificar si estamos creciendo, decreciendo o si hay patrones estacionales.
-            - **Distribución por Tipo:** Revela cuáles son los servicios más demandados (Aéreo, Marítimo, etc.).
-            - **Carga por Operativo:** Muestra cómo se distribuye el trabajo entre el equipo. Ideal para detectar desequilibrios en la carga.
+            st.markdown("""
+            **Objetivo:** Ofrecer una vista panorámica del estado de las operaciones.
+
+            - **Tendencia de Operaciones:** Analiza crecimiento, caídas o estacionalidad.
+            - **Distribución por Tipo:** Muestra los servicios más solicitados (Aéreo, Marítimo, etc.).
+            - **Carga por Operativo:** Permite ver si hay desequilibrio en la distribución del trabajo.
             """)
 
         with st.expander("🧮 **Capacidad**", expanded=True):
-            st.write("""
-            **Propósito:** Evaluar la carga de trabajo actual de cada operativo frente a su capacidad ideal.
-            - **Abiertas:** Número de operaciones que el operativo tiene actualmente en proceso.
-            - **Cerradas:** Operaciones completadas en el período filtrado.
-            - **Cargas Posibles Adicionales:** El "espacio" que le queda a un operativo para recibir nuevo trabajo, calculado como `Capacidad Ideal - Cargas Abiertas`. Ayuda a evitar la sobrecarga.
+            st.markdown("""
+            **Objetivo:** Medir la carga actual de cada operativo frente a su capacidad ideal.
+
+            - **Abiertas:** Operaciones en curso.
+            - **Cerradas:** Operaciones completadas.
+            - **Cargas Posibles Adicionales:** Capacidad restante = Capacidad Ideal - Abiertas.
             """)
 
         with st.expander("📈 **Resumen**", expanded=True):
-            st.write("""
-            **Propósito:** Proveer una tabla detallada con el conteo total de operaciones, agrupadas por operativo y tipo.
-            Es una vista de "zoom-in" para entender en qué tipos de operaciones se especializa cada miembro del equipo. Ideal para descargar y usar en reportes externos.
+            st.markdown("""
+            **Objetivo:** Proveer una tabla detallada del volumen de trabajo por operativo y tipo.
+
+            - Ideal para reportes.
+            - Muestra especialización por tipo de operación.
             """)
-        
+
     with col2:
         with st.expander("🚦 **Asignación**", expanded=True):
-            st.write("""
-            **Propósito:** Sugerir de manera inteligente a quién asignar una nueva operación.
-            - **Índice de Asignación:** Una puntuación que combina **disponibilidad** (cuánto espacio tiene) y **eficiencia** (qué tan rápido ha sido en el pasado).
+            st.markdown("""
+            **Objetivo:** Recomendar a quién asignar una nueva operación.
+
+            - **Índice de Asignación:** Evalúa disponibilidad y eficiencia.
             - **Fórmula:** `(Capacidad Disponible / (Velocidad Promedio + 1)) * 100`
-            - **Uso Práctico:** Al recibir una nueva tarea, consulta esta guía. El operativo con el índice más alto es, en teoría, el mejor candidato.
+            - Útil para balancear la carga de trabajo.
             """)
-        
+
         with st.expander("📊 **Clasificación**", expanded=True):
-            st.write("""
-            **Propósito:** Calificar el rendimiento de cada operativo basado en su volumen de trabajo mensual.
-            - **Índice de Flujo:** Compara el promedio mensual real de operaciones de un operativo con el promedio ideal esperado.
+            st.markdown("""
+            **Objetivo:** Calificar el rendimiento mensual de cada operativo.
+
+            - **Índice de Flujo:** Compara desempeño real vs. esperado.
             - **Niveles:**
-                - **ALTO (≥ 100%):** Rendimiento excepcional.
-                - **MEDIO (70% - 99%):** Rendimiento dentro de lo esperado.
-                - **BAJO (< 70%):** Rendimiento por debajo de las expectativas, puede indicar poca carga de trabajo.
+                - 🟢 ALTO (≥ 100%): Excelente.
+                - 🟡 MEDIO (70% - 99%): Aceptable.
+                - 🔴 BAJO (< 70%): Posible subutilización.
             """)
-        
+
         with st.expander("⏱️ **Tiempos**", expanded=True):
-            st.write("""
-            **Propósito:** Analizar la eficiencia y el cumplimiento de los plazos.
-            - **Gráfico Comparativo:** Visualiza la diferencia entre el "Tiempo Estándar" (la meta) y la "Duración Real Promedio" (el resultado) para cada tipo de operación.
-            - **Tabla de Rendimiento:** Detalla los tiempos promedio, mínimo y máximo de cada operativo para identificar a los más rápidos y consistentes.
+            st.markdown("""
+            **Objetivo:** Analizar eficiencia y cumplimiento de plazos.
+
+            - **Gráfico Comparativo:** Meta vs. duración real promedio.
+            - **Tabla de Rendimiento:** Promedios, mínimos y máximos por operativo.
             """)

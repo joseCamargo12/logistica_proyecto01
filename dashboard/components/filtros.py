@@ -1,6 +1,3 @@
-# ================================================
-# ARCHIVO A MODIFICAR: dashboard/components/filtros.py (REMASTERIZADO)
-# ================================================
 import streamlit as st
 import pandas as pd
 import locale
@@ -10,9 +7,13 @@ try:
 except:
     pass
 
+st.markdown("""
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+""", unsafe_allow_html=True)
+
 def mostrar_filtros(df):
     with st.sidebar:
-        st.header("🔍 Filtros Globales")
+        st.markdown(""" <h2 style='font-size:25px;'> <i class="bi bi-funnel-fill"></i> Filtros Globales </h2> """, unsafe_allow_html=True)
         st.divider()
 
         # --- Filtro de Período con Expanders ---
@@ -53,3 +54,4 @@ def mostrar_filtros(df):
             df_filtrado = df_filtrado[df_filtrado['display_month'].isin(meses_seleccionados_display)]
             
         return df_filtrado
+    

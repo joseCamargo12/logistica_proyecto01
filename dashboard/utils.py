@@ -1,6 +1,3 @@
-# ================================================
-# ARCHIVO A MODIFICAR: dashboard/utils.py (VERSIÓN TRANSPARENTE)
-# ================================================
 import streamlit as st
 import pandas as pd
 from supabase import Client
