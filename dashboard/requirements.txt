@@ -1,10 +1,26 @@
-numpy==2.3.2
-pandas==2.3.1
-plotly==5.22.0
-prophet==1.1.5
-Requests==2.32.4
+﻿# ================================================
+# ARCHIVO A MODIFICAR: dashboard/requirements.txt (VERSIÓN FINAL Y COMPATIBLE)
+# ================================================
+
+# --- Librerías base ---
 streamlit==1.35.0
-streamlit_authenticator==0.3.2
-streamlit_lottie==0.0.3
-supabase==2.17.0
-~lotly==6.2.0
+pandas==2.2.2
+openpyxl==3.1.2
+requests==2.32.3
+streamlit-lottie==0.0.3
+
+# --- Autenticación y Base de Datos (AQUÍ ESTÁ LA CORRECCIÓN) ---
+streamlit-authenticator==0.3.2
+# Usamos una versión de supabase que ya es compatible con versiones más nuevas de sus dependencias
+supabase>=2.0.0,<3.0.0
+psycopg2-binary==2.9.9
+
+# --- Dependencias para Prophet y Descargas ---
+# La clave: Forzamos a NumPy a una versión ANTERIOR a la 2.0 para que sea compatible con Prophet
+numpy<2.0
+cmdstanpy==1.2.2
+xlsxwriter==3.2.0
+
+# --- Prophet ---
+prophet==1.1.5
+plotly==6.2.0
