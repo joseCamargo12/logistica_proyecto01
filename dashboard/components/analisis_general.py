@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 from supabase import Client
 
+
 @st.cache_data(ttl=600)
 def cargar_logs_de_carga(_supabase: Client):
     response = _supabase.table('cargas_log').select("*").order('fecha_carga', desc=True).execute()

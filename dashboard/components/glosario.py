@@ -3,6 +3,8 @@
 # ================================================
 import streamlit as st
 
+
+
 def mostrar_glosario_y_soporte():
     # --- TÍTULO PRINCIPAL CON ICONO ---
     st.markdown('<h2><i class="bi bi-question-circle-fill"></i> Guía de Usuario y Soporte Técnico</h2>', unsafe_allow_html=True)

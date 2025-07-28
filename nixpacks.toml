@@ -1,8 +1,18 @@
+# nixpacks.toml
+
+# --- FASE 1: INSTALACIÓN DEL ENTORNO ---
+# Le decimos que instale Python 3.11 y pip.
 [phases.setup]
 nixPkgs = ['python311', 'python311Packages.pip']
 
-[phases.build]
-cmds = ['pip install -r dashboard/requirements.txt']
+# --- FASE 2: INSTALACIÓN DE DEPENDENCIAS ---
+# Este es el comando para instalar tus paquetes.
+# Se ejecuta desde la raíz del proyecto.
+[phases.install]
+cmds = ['pip install -r requirements.txt']
 
+# --- FASE 3: COMANDO DE INICIO ---
+# Le decimos que primero se mueva a la carpeta 'dashboard'
+# y LUEGO ejecute streamlit.
 [start]
-cmd = 'streamlit run dashboard/app.py --server.port=$PORT --server.enableCORS=false'
+cmd = 'cd dashboard && streamlit run app.py'

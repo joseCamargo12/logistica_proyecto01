@@ -5,6 +5,7 @@ from .soporte import calcular_soporte
 from .analisis_tiempos import calcular_duracion_real
 from utils import to_excel
 
+
 def mostrar_asignacion(df_filtrado):
     st.markdown('<h3><i class="bi bi-sign-turn-right-fill"></i> Guía Inteligente para Asignación de Nuevas Cargas</h3>', unsafe_allow_html=True)
     if df_filtrado.empty:

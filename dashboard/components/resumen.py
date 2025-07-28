@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from utils import to_excel
 
+
 def mostrar_resumen(df):
     st.markdown('<h3><i class="bi bi-card-checklist"></i> Resumen de Operaciones por Operativo y Tipo</h3>', unsafe_allow_html=True)
     if df.empty:

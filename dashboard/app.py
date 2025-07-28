@@ -1,14 +1,9 @@
-# ==========================================================
-# CÓDIGO CORREGIDO Y A PRUEBA DE BALAS PARA app.py
-# ==========================================================
 import streamlit as st
 
-# --- PASO 1: CONFIGURACIÓN DE PÁGINA (DEBE SER LO PRIMERO) ---
-# La única excepción son los imports y las definiciones de variables simples.
 logo_url = "https://res.cloudinary.com/dwqahfw5n/image/upload/v1753630828/copia-removebg-preview_yced1y.png"
 
 st.set_page_config(
-    page_title="FAM Logística | BI Dashboard",
+    page_title="FAM Logística | BI ",
     page_icon=logo_url, 
     layout="wide"
 )
@@ -25,6 +20,9 @@ import requests
 
 from components import filtros, resumen, clasificacion, soporte, asignacion, analisis_tiempos, analisis_general, pronosticos, glosario
 from utils import analizar_archivo_cargado, insertar_nuevos_datos, registrar_log_de_carga, to_excel
+
+
+
 
 # --- PASO 3: COMANDOS DE STREAMLIT ---
 # Ahora sí podemos ejecutar st.markdown y cualquier otro comando.
@@ -120,6 +118,7 @@ try:
             }
         }
     }
+
     authenticator = stauth.Authenticate(credentials, "cookie_logistica_final", "key_logistica_final", cookie_expiry_days=30)
     authenticator.login()
 except Exception as e:
@@ -164,7 +163,7 @@ with st.sidebar:
 
     st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
     st.markdown("<div style='margin-top: 25px;'></div>", unsafe_allow_html=True)
-    
+
     authenticator.logout("Cerrar Sesión", "sidebar")
 
 st.sidebar.divider()

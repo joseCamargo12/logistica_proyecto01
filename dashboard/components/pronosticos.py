@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from prophet import Prophet
 
+
+
 @st.cache_data(ttl=3600)
 def generar_pronostico_filtrado(_df_historico, periodos, tipo_operacion=None):
     """

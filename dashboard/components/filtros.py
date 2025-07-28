@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import locale
 
+
 try:
     locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 except:

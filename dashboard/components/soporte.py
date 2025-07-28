@@ -3,6 +3,9 @@ import pandas as pd
 import plotly.express as px
 from utils import to_excel
 
+
+
+
 @st.cache_data
 def calcular_soporte(df):
     if df.empty: return pd.DataFrame()
