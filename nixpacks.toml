@@ -1,18 +1,20 @@
-# nixpacks.toml
+# nixpacks.toml (VERSIÓN CORREGIDA PARA PEP 668)
 
 # --- FASE 1: INSTALACIÓN DEL ENTORNO ---
-# Le decimos que instale Python 3.11 y pip.
+# Instala Python 3.11 y las herramientas para crear entornos virtuales.
 [phases.setup]
-nixPkgs = ['python311', 'python311Packages.pip']
+nixPkgs = ['python311', 'python311Packages.pip', 'python311Packages.venv']
 
 # --- FASE 2: INSTALACIÓN DE DEPENDENCIAS ---
-# Este es el comando para instalar tus paquetes.
-# Se ejecuta desde la raíz del proyecto.
+# 1. Crea un entorno virtual llamado 'venv' en el directorio /app
+# 2. Activa el entorno virtual
+# 3. Instala los paquetes DESDE DENTRO del entorno activado.
 [phases.install]
-cmds = ['pip install -r requirements.txt']
+cmds = ['python -m venv venv', '. venv/bin/activate && pip install -r requirements.txt']
 
 # --- FASE 3: COMANDO DE INICIO ---
-# Le decimos que primero se mueva a la carpeta 'dashboard'
-# y LUEGO ejecute streamlit.
+# 1. Activa el entorno virtual
+# 2. Cambia al directorio 'dashboard'
+# 3. Ejecuta streamlit
 [start]
-cmd = 'cd dashboard && streamlit run app.py'
+cmd = '. venv/bin/activate && cd dashboard && streamlit run app.py'
