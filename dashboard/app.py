@@ -5,6 +5,7 @@ from supabase import create_client, Client
 import streamlit_authenticator as stauth
 from streamlit_lottie import st_lottie
 from core.processing import analizar_archivo_cargado, insertar_nuevos_datos, registrar_log_de_carga, to_excel
+import os
 
 # --- NUEVOS IMPORTS ---
 from core.database import cargar_datos_desde_bd
