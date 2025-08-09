@@ -55,3 +55,6 @@ __pycache__/
 # Ignorar archivos de configuración de IDEs
 .vscode/
 .idea/
+
+# Ignorar archivos de passwords
+dashboard/.streamlit/secrets.toml

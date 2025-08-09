@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 from .soporte import calcular_soporte
 from .analisis_tiempos import calcular_duracion_real
-from utils import to_excel
+
 
 
 def mostrar_asignacion(df_filtrado):

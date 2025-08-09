@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from utils import to_excel
+from core.processing import to_excel # <- CAMBIO EN IMPORT
 
 @st.cache_data
 def calcular_duracion_real(df):

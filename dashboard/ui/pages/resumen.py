@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from utils import to_excel
+from core.processing import to_excel # <- CAMBIO EN IMPORT
 
 
 def mostrar_resumen(df):
