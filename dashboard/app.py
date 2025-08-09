@@ -18,32 +18,42 @@ from config import LOGO_URL, LOTTIE_URL
 st.set_page_config(page_title="FAM Logística | BI", page_icon=LOGO_URL, layout="wide")
 st.markdown("""<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">""", unsafe_allow_html=True)
 
-# --- CONEXIÓN Y AUTENTICACIÓN (Tu código original) ---
-try:
-    # Intenta leer desde st.secrets (para local o Streamlit Cloud)
-    # Si falla, el bloque except se encargará de las variables de entorno.
-    supabase_url = st.secrets["supabase_url"]
-    supabase_key = st.secrets["supabase_key"]
-    auth_admin_name = st.secrets["auth_admin_name"]
-    auth_admin_password_hash = st.secrets["auth_admin_password_hash"]
-    auth_user_name = st.secrets["auth_user_name"]
-    auth_user_password_hash = st.secrets["auth_user_password_hash"]
+# dashboard/app.py
 
-except FileNotFoundError:
-    # Si secrets.toml no se encuentra, lee desde las variables de entorno de Railway
-    st.info("secrets.toml no encontrado. Usando variables de entorno.")
+# --- INICIALIZACIÓN DE CREDENCIALES (LÓGICA LIMPIA Y SILENCIOSA) ---
+
+# Primero, intentamos detectar si estamos en un entorno de nube (Railway)
+# comprobando si una de las variables de entorno clave existe.
+if "supabase_url" in os.environ:
+    # Si estamos en la nube, cargamos TODO desde las variables de entorno.
+    # No se muestra ningún mensaje al usuario.
     supabase_url = os.environ.get("supabase_url")
     supabase_key = os.environ.get("supabase_key")
     auth_admin_name = os.environ.get("auth_admin_name")
     auth_admin_password_hash = os.environ.get("auth_admin_password_hash")
     auth_user_name = os.environ.get("auth_user_name")
     auth_user_password_hash = os.environ.get("auth_user_password_hash")
+else:
+    # Si no, asumimos que estamos en local y cargamos desde el archivo st.secrets.
+    # Esto no mostrará el aviso de "No secrets files found" porque el archivo SÍ existe localmente.
+    try:
+        supabase_url = st.secrets["supabase_url"]
+        supabase_key = st.secrets["supabase_key"]
+        auth_admin_name = st.secrets["auth_admin_name"]
+        auth_admin_password_hash = st.secrets["auth_admin_password_hash"]
+        auth_user_name = st.secrets["auth_user_name"]
+        auth_user_password_hash = st.secrets["auth_user_password_hash"]
+    except (FileNotFoundError, KeyError):
+        # Si estamos en local y el archivo o una clave faltan, mostramos un error claro.
+        st.error("Archivo secrets.toml o una de sus claves no se encontraron en el entorno local.")
+        st.stop()
 
-# --- Una vez cargadas las variables, el resto del código es el mismo ---
+
+# --- CONEXIÓN Y AUTENTICACIÓN (Esta parte usa las variables ya cargadas) ---
 try:
-    # Verificación de que las variables se cargaron correctamente
+    # Verificación de que las variables se cargaron correctamente de una u otra fuente.
     if not all([supabase_url, supabase_key, auth_admin_name, auth_admin_password_hash, auth_user_name, auth_user_password_hash]):
-        st.error("Error: Faltan una o más credenciales. Revisa tus secretos o variables de entorno en Railway.")
+        st.error("Error: Faltan una o más credenciales. Revisa tus secretos o variables de entorno.")
         st.stop()
         
     supabase = create_client(supabase_url, supabase_key)
