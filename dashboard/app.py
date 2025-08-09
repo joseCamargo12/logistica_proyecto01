@@ -19,12 +19,42 @@ st.markdown("""<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstr
 
 # --- CONEXIÓN Y AUTENTICACIÓN (Tu código original) ---
 try:
-    # Esta parte se queda igual: inicializa la conexión y el autenticador
-    supabase = create_client(st.secrets["supabase_url"], st.secrets["supabase_key"])
-    credentials = {"usernames": {"estrategia.dev": {"name": st.secrets["auth_admin_name"], "password": st.secrets["auth_admin_password_hash"]}, "fam.team": {"name": st.secrets["auth_user_name"], "password": st.secrets["auth_user_password_hash"]}}}
+    # Intenta leer desde st.secrets (para local o Streamlit Cloud)
+    # Si falla, el bloque except se encargará de las variables de entorno.
+    supabase_url = st.secrets["supabase_url"]
+    supabase_key = st.secrets["supabase_key"]
+    auth_admin_name = st.secrets["auth_admin_name"]
+    auth_admin_password_hash = st.secrets["auth_admin_password_hash"]
+    auth_user_name = st.secrets["auth_user_name"]
+    auth_user_password_hash = st.secrets["auth_user_password_hash"]
+
+except FileNotFoundError:
+    # Si secrets.toml no se encuentra, lee desde las variables de entorno de Railway
+    st.info("secrets.toml no encontrado. Usando variables de entorno.")
+    supabase_url = os.environ.get("supabase_url")
+    supabase_key = os.environ.get("supabase_key")
+    auth_admin_name = os.environ.get("auth_admin_name")
+    auth_admin_password_hash = os.environ.get("auth_admin_password_hash")
+    auth_user_name = os.environ.get("auth_user_name")
+    auth_user_password_hash = os.environ.get("auth_user_password_hash")
+
+# --- Una vez cargadas las variables, el resto del código es el mismo ---
+try:
+    # Verificación de que las variables se cargaron correctamente
+    if not all([supabase_url, supabase_key, auth_admin_name, auth_admin_password_hash, auth_user_name, auth_user_password_hash]):
+        st.error("Error: Faltan una o más credenciales. Revisa tus secretos o variables de entorno en Railway.")
+        st.stop()
+        
+    supabase = create_client(supabase_url, supabase_key)
+    credentials = {
+        "usernames": {
+            "estrategia.dev": {"name": auth_admin_name, "password": auth_admin_password_hash},
+            "fam.team": {"name": auth_user_name, "password": auth_user_password_hash}
+        }
+    }
     authenticator = stauth.Authenticate(credentials, "cookie_logistica_final", "key_logistica_final", cookie_expiry_days=30)
 except Exception as e:
-    st.error(f"Error fatal al configurar la autenticación: {e}")
+    st.error(f"Error fatal de inicialización: {e}")
     st.stop()
 
 # --- LÓGICA DE LOGIN CON FEEDBACK AL USUARIO (Reemplaza tu authenticator.login() y el if) ---
