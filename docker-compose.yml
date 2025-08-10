@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  fam-logistica-app:
+    build: .
+    container_name: fam-logistica
+    restart: unless-stopped
+    ports:
+      - "8501:8501"  # Puerto externo:interno
+    environment:
+      # Variables de Supabase
+      - supabase_url=${SUPABASE_URL}
+      - supabase_key=${SUPABASE_KEY}
+      # Variables de autenticación
+      - auth_admin_name=${AUTH_ADMIN_NAME}
+      - auth_admin_password_hash=${AUTH_ADMIN_PASSWORD_HASH}
+      - auth_user_name=${AUTH_USER_NAME}
+      - auth_user_password_hash=${AUTH_USER_PASSWORD_HASH}
+    volumes:
+      # Persistir logs de métricas
+      - ./logs:/app/logs
+      # Opcional: montar código en desarrollo
+      # - ./dashboard:/app/dashboard
+    networks:
+      - fam-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  fam-network:
+    driver: bridge
+    # Si quieres conectar con tus otros servicios, descomenta las siguientes líneas:
+    # external: true
+    # name: tu-red-existente
