@@ -14,7 +14,7 @@ def mostrar_glosario_y_soporte():
     # ==== INFORMACIÓN DEL DESARROLLADOR CON ICONOS ---
     st.markdown('<h3><i class="bi bi-person-workspace"></i> Desarrollado por</h3>', unsafe_allow_html=True)
     st.markdown("""
-    Esta plataforma fue desarrollada a medida por **[Estrategia Empresarial](https://estrategiaempresarial.com.co/)** para potenciar el análisis de datos de **FAM Logística**.
+    Esta plataforma fue desarrollada a medida por **[Estrategia Empresarial](https://estrategiaempresarial.com.co/)** y desarrollada por **Jose Camargo** para potenciar el análisis de datos de **FAM Logistics Cargo**.
 
     Si encuentras algún problema, tienes una idea para una nueva funcionalidad o necesitas soporte técnico, no dudes en contactarme:
 

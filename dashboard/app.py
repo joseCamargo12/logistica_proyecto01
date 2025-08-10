@@ -100,11 +100,12 @@ with st.sidebar:
 
     # <-- MÉTRICAS: Paso 4 - Modificar el botón de logout para que termine la sesión
     # En lugar de authenticator.logout(...), lo envolvemos en un st.button para controlar la acción
-    if st.button("Cerrar Sesión", use_container_width=True):
-        metrics.end_session()       # Primero, guardamos la métrica de fin de sesión
-        authenticator.logout()      # Luego, cerramos la sesión de autenticación
-        st.rerun()                  # Forzamos un refresco de la página
-
+    if st.session_state.get("authentication_status"):
+    # authenticator.logout() crea el botón y maneja el cierre de sesión de forma segura.
+    # El primer argumento es el texto del botón.
+    # El segundo, 'sidebar', lo posiciona en la barra lateral.
+        authenticator.logout('Cerrar Sesión', 'sidebar')
+        
     st.sidebar.divider()
 
     # Panel de Administrador (Tu código se mantiene 100% igual aquí)

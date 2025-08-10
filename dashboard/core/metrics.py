@@ -19,6 +19,14 @@ class UserMetrics:
                 json.dump([], f)
 
     def start_session(self, username: str):
+        # ANTES DE INICIAR UNA NUEVA SESIÓN,
+        # COMPROBAMOS SI HAY UNA SESIÓN ANTERIOR "COLGADA" SIN FINALIZAR.
+        if 'session_start_time' in st.session_state and st.session_state.get('session_username') != username:
+            # Si hay una sesión iniciada y el usuario es diferente,
+            # cerramos la sesión del usuario anterior.
+            self.end_session()
+
+        # Ahora, procedemos a iniciar la nueva sesión si no hay una activa.
         if 'session_start_time' not in st.session_state:
             st.session_state.session_start_time = datetime.now()
             st.session_state.pages_visited = []
@@ -80,6 +88,19 @@ class UserMetrics:
             }
         except Exception:
             return None
+    def get_recent_sessions(self, limit=50):
+        """Obtiene las N sesiones más recientes de la base de datos."""
+        try:
+            response = self.supabase.table('user_sessions').select("*").order('session_start', desc=True).limit(limit).execute()
+            if response.data:
+                return pd.DataFrame(response.data)
+            # Devuelve un DataFrame vacío si no hay datos o si falla
+            return pd.DataFrame() 
+        except Exception as e:
+            # En lugar de mostrar un error que detenga la app, lo registramos y devolvemos un DF vacío
+            print(f"Error al obtener sesiones recientes: {e}")
+            return pd.DataFrame()
+
 
 def init_metrics(supabase: Client):
     if 'metrics' not in st.session_state:
